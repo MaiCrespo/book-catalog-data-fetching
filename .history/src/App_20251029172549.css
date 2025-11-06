@@ -1,0 +1,434 @@
+:root {
+  --card-w: 240px;
+  --card-h: 360px;
+  --gap: 20px;
+
+  --bg: #f5f5f5;
+  --ink: #111;
+  --muted: #898989;
+  --border: #e5e7eb;
+  --brand: #111;
+  --link: #2563eb;
+  --add: #0f7376;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+/* App shell */
+.app {
+  min-height: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #fff;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.header {
+  padding: 1.25rem 1.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.header h1 {
+  margin: 0;
+  font-size: 1.9rem;
+  color: var(--brand);
+}
+.sub {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+}
+
+.content {
+  padding: 1.25rem 1.5rem 2rem;
+}
+
+/* Two column layout: left = Add + actions, right = books grid */
+.grid-wrapper {
+  display: grid;
+  grid-template-columns: var(--card-w) 1fr;
+  gap: var(--gap);
+  align-items: start;
+}
+.add-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Books grid on the right */
+.grid-books {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--card-w), 1fr));
+  gap: var(--gap);
+  justify-items: center;
+}
+
+/* Card base */
+.card {
+  width: var(--card-w);
+  height: var(--card-h);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Book card content */
+.card img {
+  width: 100%;
+  height: 62%;
+  object-fit: contain;
+  background: #ffffff;
+}
+.card-body {
+  padding: 0.8rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.book-title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.25rem;
+}
+.book-author {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+.book-price {
+  margin: 0;
+  color: #009161;
+  font-weight: 700;
+}
+.details {
+  margin-top: auto;
+  color: var(--link);
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+
+/* Add card */
+.add-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 1px dashed #cbd5e1;
+  background: #ecfeff;
+  cursor: pointer;
+}
+.add-card:hover {
+  border-style: solid;
+}
+.add-plus {
+  display: inline-grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  background: var(--add);
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+}
+.add-text {
+  position: absolute;
+  clip: rect(0 0 0 0);
+}
+
+/* Actions under the add card */
+.actions {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+  width: var(--card-w); /* ensure same width as card */
+}
+.action-btn {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  text-align: center;
+}
+.action-btn:hover {
+  background: #f7f7f7;
+}
+.action-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #fafafa;
+}
+.action-btn.danger {
+  border-color: #fca5a5;
+  background: #fff5f5;
+}
+
+/* Selection visuals */
+.book-card {
+  position: relative;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease,
+    background 0.15s ease;
+}
+.book-card.selected {
+  border-color: #2563eb;
+  background: #eef2ff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+/* Footer */
+.footer {
+  background: #111;
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+.modal {
+  width: min(520px, 92vw);
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h2 {
+  margin: 0;
+}
+.icon-btn.close {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.book-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+  padding: 1rem 1.25rem 1.25rem;
+}
+.book-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+.book-form input {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+}
+.form-spacer {
+}
+
+.modal-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+.modal-actions button {
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+.modal-actions .primary {
+  background: var(--add);
+  border-color: var(--add);
+  color: #fff;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 200px 200px auto;
+  gap: 12px;
+  align-items: center;
+  margin: 0 0 14px;
+}
+
+.filter-input,
+.filter-select {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fff;
+}
+
+.filter-reset {
+  padding: 0.55rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #f7f7f7;
+}
+
+.card.is-selected {
+  border: 2px solid #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.book-form.wide {
+  grid-template-columns: 180px 1fr;
+  row-gap: 16px;
+  column-gap: 22px;
+}
+.book-form.wide label {
+  justify-self: end;
+  font-weight: 600;
+}
+.modal-actions.two-col {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+/* Header switch */
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.view-switch {
+  display: inline-flex;
+  background: #f2f4f7;
+  border-radius: 10px;
+  padding: 3px;
+  gap: 4px;
+}
+.view-switch .tab {
+  border: 0;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.view-switch .tab.active {
+  background: #fff;
+  border: 1px solid var(--border);
+}
+
+/* Book badge for loans */
+.thumb-wrap {
+  position: relative;
+}
+.badge-loan {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 0.74rem;
+  background: #c026d3; /* purple */
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 999px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+.card.is-loaned {
+  opacity: 0.92;
+}
+
+/* Loan manager layout */
+.loan-wrap {
+  display: grid;
+  gap: 16px;
+}
+.loan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.notice {
+  border: 1px dashed var(--border);
+  background: #fffef3;
+  padding: 1rem;
+  border-radius: 10px;
+}
+.loan-form {
+  display: grid;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.loan-form .frow {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+.loan-form input,
+.loan-form select {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+.loan-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.loan-actions .primary {
+  background: #166534;
+  color: #fff;
+  border: 0;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+}
+
+.loan-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.loan-item {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.loan-title {
+  font-weight: 700;
+}
+.loan-meta {
+  color: var(--muted);
+}

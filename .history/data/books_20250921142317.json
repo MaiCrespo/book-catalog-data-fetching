@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Learning React",
+    "price": "$39.99",
+    "image": "https://itbook.store/img/books/9781492051725.png",
+    "url": "https://itbook.store/books/9781492051725",
+    "isbn13": "9781492051725"
+  },
+  {
+    "title": "You Don’t Know JS Yet",
+    "price": "$0.00",
+    "image": "https://itbook.store/img/books/9781091210096.png",
+    "url": "https://itbook.store/books/9781091210096",
+    "isbn13": "9781091210096"
+  }
+  // add more here...
+]
