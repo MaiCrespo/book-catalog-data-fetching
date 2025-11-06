@@ -1,3 +1,4 @@
+// src/App.jsx
 import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import Book from "./components/book.jsx";
@@ -76,13 +77,29 @@ export default function App() {
   const [view, setView] = useState("catalog");
   const [detailsBook, setDetailsBook] = useState(null);
 
-  const openAdd = () => {};
-  const openEdit = () => {};
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState("add");
+  const [editingBook, setEditingBook] = useState(null);
+
+  const openAdd = () => {
+    setModalMode("add");
+    setEditingBook(null);
+    setShowModal(true);
+  };
+
+  const openEdit = () => {
+    if (!selected) return;
+    setModalMode("edit");
+    setEditingBook(selected);
+    setShowModal(true);
+  };
+
   const handleDeleteSelected = () => {
     if (!selected) return;
     setItems((prev) => prev.filter((b) => b.id !== selected.id));
     setSelectedId(null);
   };
+
   const handleToggleSelect = (id) =>
     setSelectedId((p) => (p === id ? null : id));
 
@@ -90,6 +107,51 @@ export default function App() {
     if (loanedIds.has(loan.bookId)) return;
     setLoans((prev) => [loan, ...prev]);
     setSelectedId(null);
+  };
+
+  const handleSubmitBook = (e) => {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+
+    const title = String(form.get("title") || "").trim();
+    const author = String(form.get("author") || "").trim();
+    const publisher = String(form.get("publisher") || "").trim();
+    const yearRaw = String(form.get("year") || "").trim();
+    const language = String(form.get("language") || "").trim();
+    const pagesRaw = String(form.get("pages") || "").trim();
+    const coverUrl = String(form.get("coverUrl") || "").trim();
+
+    if (!title || !author || !coverUrl) return;
+
+    const year = yearRaw ? Number(yearRaw) : undefined;
+    const pages = pagesRaw ? Number(pagesRaw) : undefined;
+
+    const payload = {
+      title,
+      author,
+      publisher,
+      year,
+      language,
+      pages,
+      image: coverUrl,
+      url: coverUrl,
+    };
+
+    if (modalMode === "add") {
+      const newBook = {
+        id: `local-${Date.now()}`,
+        ...payload,
+      };
+      setItems((prev) => [newBook, ...prev]);
+    } else if (modalMode === "edit" && editingBook) {
+      setItems((prev) =>
+        prev.map((b) => (b.id === editingBook.id ? { ...b, ...payload } : b))
+      );
+    }
+
+    setShowModal(false);
+    setEditingBook(null);
+    e.currentTarget.reset();
   };
 
   return (
@@ -186,6 +248,109 @@ export default function App() {
       <footer className="footer">
         <p>© {new Date().getFullYear()} Mai Crespo</p>
       </footer>
+
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h2 id="modal-title">
+                {modalMode === "add" ? "Add Book" : "Edit Book"}
+              </h2>
+              <button
+                className="icon-btn close"
+                onClick={() => setShowModal(false)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <form className="book-form wide" onSubmit={handleSubmitBook}>
+              <label htmlFor="title">Title</label>
+              <input
+                id="title"
+                name="title"
+                type="text"
+                defaultValue={editingBook?.title || ""}
+                required
+              />
+
+              <label htmlFor="author">Author</label>
+              <input
+                id="author"
+                name="author"
+                type="text"
+                defaultValue={editingBook?.author || ""}
+                required
+              />
+
+              <label htmlFor="publisher">Publisher</label>
+              <input
+                id="publisher"
+                name="publisher"
+                type="text"
+                defaultValue={editingBook?.publisher || ""}
+              />
+
+              <label htmlFor="year">Publication Year</label>
+              <input
+                id="year"
+                name="year"
+                type="number"
+                min="0"
+                defaultValue={editingBook?.year || ""}
+              />
+
+              <label htmlFor="language">Language</label>
+              <input
+                id="language"
+                name="language"
+                type="text"
+                defaultValue={editingBook?.language || ""}
+              />
+
+              <label htmlFor="pages">Pages</label>
+              <input
+                id="pages"
+                name="pages"
+                type="number"
+                min="1"
+                defaultValue={editingBook?.pages || ""}
+              />
+
+              <label htmlFor="coverUrl">URL (book cover)</label>
+              <input
+                id="coverUrl"
+                name="coverUrl"
+                type="url"
+                defaultValue={editingBook?.image || editingBook?.url || ""}
+                required
+              />
+
+              <div className="modal-actions two-col">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowModal(false);
+                    setEditingBook(null);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="primary">
+                  {modalMode === "add" ? "Save" : "Update"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
